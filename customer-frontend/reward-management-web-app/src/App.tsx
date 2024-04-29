@@ -1,30 +1,53 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
-import questTheme from 'src/QuestUiKitLightTheme';
-import Q2Portal from 'src/components/Q2Portal/Q2Portal';
-import Q5QrCode from 'src/components/Q5QrCode/Q5QrCode';
-import Q3Rewards from 'src/components/Q3Rewards/Q3Rewards';
-import Q4RewardPage from 'src/components/Q4RewardPage/Q4RewardPage';
-import Q6RewardConfirmations from './components/Q6RewardConfirmations/Q6RewardConfirmations';
+// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+
+//    http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
+import { useAuthContext } from "@asgardeo/auth-react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+import TodoListPage from "./pages/TodoListPage";
+import LoginPage from "./pages/LoginPage";
+
+import "./App.css";
+
+const theme = createTheme({
+  palette: {
+    background: {
+      default: "#E7EBF0",
+    },
+  },
+});
 
 function App() {
+  const { state } = useAuthContext();
+
+  console.log("state", state);
+
   return (
-    <HelmetProvider>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={questTheme}>
-          <Routes>
-            <Route path="/" element={<Q2Portal />} />
-            <Route path="/accounts" element={<Q2Portal />} />
-            <Route path="/qr-code/:rewardId" element={<Q5QrCode />} />
-            <Route path="/rewards" element={<Q3Rewards />} />
-            <Route path="/reward-details/:rewardId" element={<Q4RewardPage />} />
-            <Route path="/confirmed-rewards" element={<Q6RewardConfirmations />} />
-          </Routes>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </HelmetProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      <Container>
+        {state.isAuthenticated ? (
+          <TodoListPage />
+        ) : (
+          <LoginPage isLoginProgress={state.isLoading} />
+        )}
+      </Container>
+    </ThemeProvider>
   );
 }
 
